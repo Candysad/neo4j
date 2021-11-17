@@ -2,13 +2,45 @@
 
 [官方文档]( https://neo4j.com/docs/ )
 
+本翻译笔记项目的github地址：[neo4j笔记仓库](https://github.com/Candysad/neo4j)
+
+本文档目前对以下内容未做详细记录
+
+- neo4j数据库与Cypher
+
+  - 索引 Indexes
+
+  - 约束 constraints
+
+  - 数据库管理 Database management
+
+  - 访问控制 Access control
+
+  - 配置设置 Query tuning
+
+  - 执行计划 Execution plans
+
+- 编程接口
+  - Java API
+  - 其他编程语言的Driver API 与语言API
+
+介于个人学习需求和时间精力的考虑，这些内容在**短时间内都不会由我补充在内**，如果你所需要的部分不在其中，我表示非常抱歉
+
+$\color{red}{^*如果你看到此文档并有意向学习翻译官方文档后补充本文档的这些内容，欢迎在本项目的github项目页面给出反馈}$
+
+**在学习、使用本文档时，请遵守本文档最末的相关条约**
+
+
+
 网上比较基础且详细的中文教程有W3Cschool的教程，但该教程很老，对应neo4j 2.1.3版本，而且内容不是很全面
+
+neo4j中文社区网活跃度很低，其5年前组织翻译的中文文档机翻严重且不完整，已经搁置
 
 之外bilibili有一些视频教程，但整体质量参差不齐
 
 总体来说，neo4j的学习和使用在国内并未较广地普及开，但实际上如沃尔玛、领英这些公司已经利用图数据库建立知识图谱做出了很多成果。
 
-本文档编写的依据是**neo4j-cypher-manual-4.3.pdf**，neo4j数据库版本**4.3.5**
+本文档编写的主要依据项目中docs，neo4j数据库版本**4.3.5**
 
 *2021/11*
 
@@ -65,9 +97,42 @@
 
 
 
-## Cypher-CQL
+## Cypher
 
 基于v4.3标准 [官方文档](https://neo4j.com/docs/cypher-manual/current/)
+
+### Cypher与CQL
+
+#### Cypher
+
+是neo4j采用的查询语言，是一种
+
+- 描述性图查询语言；
+- 尝试用简单方式表达复杂查询过程的语言；
+- 被设计为简单但高效的语言；
+- Cypher的设计受到SQL、SPARQL等语言的启发；
+
+
+
+#### CQL
+
+什么是CQL
+
+- 百度翻译的结果称CQL为持续性查询语言；
+- LeanCloud云服务提供商将CQL称为Cloud Query Language，用来称呼其自行开发的一种面向其云服务数据查询的语言；
+- W3Cschool教程中称CQL就是Cypher；
+- neo4j官方文档并未出现CQL这一说法；
+- CQL应该如SQL，指代一类查询语言，但又如实际的Oracle数据库、微软SQL server使用的SQL在细节上有略有不同，CQL的具体形式之间也应该是不同的；
+
+
+
+#### Cypher与CQL
+
+Cypher就应该不是CQL的一种
+
+- Cypher与CQL的相同点仅在开头字母相同上，介于CQL的具体含义并不唯一，很难说明Cypher与CQL的其他相同或相似、相关之处；
+- Cypher是一种图查询语言，相比之下，称为一种GQL(Graph Query Language)或许更合适；
+- W3Cschool教程中称CQL就是Cypher应该是一种误称，介于W3Cschool的neo4j教程非常老旧，其中的一些定义内容应该辩证地、用发展的眼光看待；
 
 
 
@@ -135,19 +200,19 @@
 
 - 同一查询语句中，节点标签、关系类型、属性名可以重复使用同一名称，如：
 
-  ```CQL
+  ```cypher
   CREATE (a:a {a:'a'})-[r:a]->(b:a {a: 'a'})
   ```
 
 - 统一查询语句中，节点名、关系名不能使用同一名称，如：
 
-  ```CQL
+  ```cypher
   CREATE (a)-[a]->(b)
   ```
 
 - 同一作用域内，同一名称在同一命名空间内，可重复使用，如：
 
-  ```CQL
+  ```cypher
   MATCH(s1:student)
   MATCH(s2:student)WHERE s2.name<>s1.name 
   CREATE(s1)-[:classmates]->(s2)
@@ -172,7 +237,7 @@
 
 - 动态访问
 
-  ```CQL
+  ```cypher
   CREATE
     (a:Restaurant {name: 'Hungry Jo', rating_hygiene: 10, rating_food: 7}),
     (b:Restaurant {name: 'Buttercup Tea Rooms', rating_hygiene: 5, rating_food: 6}),
@@ -186,7 +251,7 @@
 
 - 聚合
 
-  ```CQL
+  ```cypher
   CREATE
     (a:Person {name: 'Anne', eyeColor: 'blue'}),
     (b:Person {name: 'Bill', eyeColor: 'brown'}),
@@ -200,7 +265,7 @@
 
 - 整体成员变量修改
 
-  ```CQL
+  ```cypher
   CREATE (a:Person {name: 'Jane', age: 20})
   WITH a
   MATCH (p:Person {name: 'Jane'})
@@ -212,7 +277,7 @@
 
 - 修改指定的成员变量
 
-  ```CQL
+  ```cypher
   CREATE (a:Person {name: 'Jane', age: 20})
   WITH a
   MATCH (p:Person {name: 'Jane'})
@@ -234,7 +299,7 @@
 
   - 可以在一行中连续比较，完全正确则返回true
 
-    ```CQL
+    ```cypher
     RETURN 1 = 1 - 0 < 2 < 3
     result is true
     ```
@@ -292,7 +357,7 @@
   - UNION
   - UNWIND
   - WITH
-- Subclauses字命令
+- Subclauses子句
   - LIMIT 
   - ORDER 
   - SKIP
@@ -361,13 +426,58 @@
 
 cypher使用 ""//" 作为注释开头
 
-```CQL
+```cypher
 MATCH (n) RETURN n //这是行末注释
 
 MATCH (n)
 //这是一行注释
 RETURN n
 ```
+
+
+
+#### 分支判断CASE
+
+CASE本身应属于子句的一种，但提供了流程控制的功能，故记在语法一节中
+
+语法
+
+```cypher
+CASE test
+  WHEN value THEN result
+  [WHEN ...]
+  [ELSE default]
+END
+```
+
+例
+
+- 单个判断
+
+  ```cypher
+  MATCH (n)
+  RETURN
+  CASE n.eyes
+    WHEN 'blue' THEN 1
+    WHEN 'brown' THEN 2
+    ELSE 3
+  END AS result
+  ```
+
+- 与其他查询结果共同组成一个结果行
+
+  ```cypher
+  MATCH (n)
+  RETURN n.name,
+  CASE
+    WHEN n.age IS NULL THEN -1
+    ELSE n.age - 10
+  END AS age_10_years_ago
+  ```
+
+  
+
+
 
 
 
@@ -401,7 +511,7 @@ RETURN n
 
 - ON GREAT应写在ON MATCH之前；
 
-  ```CQL
+  ```cypher
   MERGE (n)
     ON CREATE SET n.prop = 0
   MERGE (a:A)-[:T]-(b:B)
@@ -412,7 +522,7 @@ RETURN n
 
 - 子查询段由{}括起，子查询内容空缩进两格，"}"应单独一行；
 
-  ```CQL
+  ```cypher
   MATCH (a:A)
   WHERE EXISTS {
     MATCH (a)-->(b:B)
@@ -423,7 +533,7 @@ RETURN n
 
 - 简单的子查询段不应换行；
 
-  ```CQL
+  ```cypher
   MATCH (a:A)
   WHERE EXISTS { (a)-->(b:B) }
   RETURN a.prop
@@ -444,7 +554,7 @@ RETURN n
 
 - 对于Map
 
-  ```CQL
+  ```cypher
   WITH {key1: 'value', key2: 42} AS map
   RETURN map
   ```
@@ -458,14 +568,14 @@ RETURN n
 
 - 节点标签与关系类型与属性间应有一个空格
 
-  ```CQL
+  ```cypher
   MATCH (p:Person {property: -1})-[:KNOWS {since: 2016}]->()
   RETURN p.name
   ```
 
 - 一个模式内不应有空格
 
-  ```CQL
+  ```cypher
   MATCH (:Person)-->(:Vehicle)
   RETURN count(*)
   ```
@@ -474,7 +584,7 @@ RETURN n
 
 - 标签指定间不应有空格；
 
-  ```CQL
+  ```cypher
   MATCH (person:Person:Owner)
   RETURN person.name
   ```
@@ -493,7 +603,7 @@ patterns
 
 -  模式需要换行时，应在箭头后换行；
 
-  ```CQL
+  ```cypher
   MATCH (:Person)-->(vehicle:Car)-->(:Company)<--
         (:Country)
   RETURN count(vehicle)
@@ -501,7 +611,7 @@ patterns
 
 - 模式中指代的节点或标签接下来不会被使用时应匿名指代；
 
-  ```CQL
+  ```cypher
   CREATE (a:End {prop: 42}),
          (:End {prop: 3}),
          (:Begin {prop: id(a)})
@@ -513,7 +623,7 @@ patterns
 
 - 将接下来要是用的重要节点放在最前；
 
-  ```CQL
+  ```cypher
   MATCH (manufacturer:Company)<--(vehicle:Car)<--(:Person)
   WHERE manufacturer.foundedYear < 2000
   RETURN vehicle.mileage
@@ -521,7 +631,7 @@ patterns
 
 - 尽量将右向模式写在前；
 
-  ```CQL
+  ```cypher
   MATCH (:Person)-->(vehicle:Car)-->(:Company)<--(:Country)
   RETURN vehicle.mileage
   ```
@@ -539,7 +649,7 @@ patterns
 
 
 
-### 命令
+### 命令与子句
 
 | 命令     | 用法                 |
 | -------- | -------------------- |
@@ -553,6 +663,8 @@ patterns
 | SET      | 添加或更新标签       |
 
 - 命令使用对大小写不敏感；
+- 命令原称为Clauses，直译为子句/从句/条款，介于Clauses下会有其子一级语句，若称Clauses为子句，则子一级语句会被称为子子句，故将Clauses译为命令，其子一级语句称子句；
+- 本节的以下具体内容包括命令与子句的使用；
 
 
 
@@ -562,7 +674,7 @@ patterns
 
 创建节点
 
-```CQL
+```cypher
 CREATE (
    <node-name>:<label-name>
    { 	
@@ -575,7 +687,7 @@ CREATE (
 
 或创建关系
 
-```CQL
+```cypher
 CREATE  
 	(<node1-label-name-OR-node-name>)
 	-[<relationship-label-name>:<relationship-name>{<define-properties-list>}]->
@@ -598,7 +710,7 @@ CREATE
 
 实例
 
-```CQL
+```cypher
 CREATE(
 	n:student
 	{
@@ -617,7 +729,7 @@ CREATE(
 
 单个匹配，不限制节点或关系，不限制返回个数
 
-```CQL
+```cypher
 MATCH 
 (
    <name>:<label-name>
@@ -626,7 +738,7 @@ MATCH
 
 或多个匹配，可指定为节点或关系
 
-```CQL
+```cypher
 MATCH 
 （<node1-name>:<node-label1>）-[<relation-name>:<relation-label>]->(<node2-name>:<node-label2>)
 ```
@@ -648,13 +760,13 @@ MATCH
 
 实例
 
-```CQL
+```cypher
 MATCH(n:student)
 ```
 
 或
 
-```CQL
+```cypher
 match(n1)-[r:classmates]->(n2)
 ```
 
@@ -666,7 +778,7 @@ MATCH不能单独使用
 
 语法
 
-```CQL
+```cypher
 RETURN 
    <node-name>.<property1-name>,
    ........
@@ -675,7 +787,7 @@ RETURN
 
 或
 
-```CQL
+```cypher
 RETURN <node-name>
 ```
 
@@ -688,7 +800,7 @@ RETURN <node-name>
 
 实例
 
-```CQL
+```cypher
 RETURN n.name
 ```
 
@@ -706,14 +818,14 @@ RETURN不能单独使用
 
 实例
 
-```CQL
+```cypher
 MATCH(n:student)
 RETURN n
 ```
 
 或
 
-```CQL
+```cypher
 MATCH(n:student)
 RETURN n.name,n.age
 ```
@@ -730,7 +842,7 @@ RETURN n.name,n.age
 
 将一个List转为一个结果集
 
-```CQL
+```cypher
 WITH [[1, 2], [3, 4], 5] AS nested
 UNWIND nested AS x
 UNWIND x AS y
@@ -759,7 +871,7 @@ RETURN y
 
 #### WHERE
 
-```CQL
+```cypher
 WHERE <condition> <boolean-operator> <condition>
 ```
 
@@ -769,7 +881,7 @@ WHERE <condition> <boolean-operator> <condition>
 
 删除节点/关系
 
-```CQL
+```cypher
 DELETE <node-name-list>
 ```
 
@@ -779,7 +891,7 @@ DELETE <node-name-list>
 
 删除节点或关系的标签/属性
 
-```CQL
+```cypher
 REMOVE <property-name-list>
 ```
 
@@ -789,7 +901,7 @@ REMOVE <property-name-list>
 
 修改成员变量的值
 
-```CQL
+```cypher
 SET  <property-name-list>
 ```
 
@@ -801,7 +913,7 @@ SET  <property-name-list>
 
 最终结果会过滤使得不出现重复的行
 
-```CQL
+```cypher
 MATCH (cc:CreditCard)
 RETURN cc.id as id,
        cc.number as number,
@@ -823,7 +935,7 @@ RETURN dc.id as id,
 
 合并两个查询结果，最终结果会保留重复的行
 
-```CQL
+```cypher
 <MATCH Command1>
 UNION ALL
 <MATCH Command2>
@@ -839,7 +951,7 @@ UNION ALL
 
 从前面选择指定个数个查询结果并返回
 
-```CQL
+```cypher
 MATCH(N)
 RETURN N
 LIMIT 20
@@ -855,7 +967,7 @@ LIMIT 20
 
 从前面跳过指定个数个查询结果后，返回剩下的查询结果
 
-```CQL
+```cypher
 MATCH(N)
 RETURN N
 SKIP 20
@@ -867,7 +979,7 @@ SKIP 20
 
 遍历
 
-```CQL
+```cypher
 MATCH p=(start)-[*]->(finish)
 WHERE start.name = 'A' AND finish.name = 'D'
 FOREACH (n IN nodes(p) | SET n.marked = true)
@@ -887,7 +999,7 @@ FOREACH (n IN nodes(p) | SET n.marked = true)
 
 匹配多个属性时，多个属性需同时匹配成功，结果才会匹配成功
 
-```CQL
+```cypher
 MERGE (michael:Person {name: 'Michael Douglas'})
 RETURN michael.name, michael.bornIn
 ```
@@ -898,7 +1010,7 @@ RETURN michael.name, michael.bornIn
 
 MERGE的子句，指定如果未匹配成功时，创建节点/关系后执行的语句
 
-```CQL
+```cypher
 MERGE (keanu:Person {name: 'Keanu Reeves'})
 ON CREATE
   SET keanu.created = timestamp()//
@@ -909,7 +1021,7 @@ RETURN keanu.name, keanu.created
 
 MERGE的子句，指定如果匹配成功时，匹配后执行的语句
 
-```CQL
+```cypher
 MERGE (person:Person)
 ON MATCH
   SET person.found = true
@@ -928,7 +1040,7 @@ RETURN person.name, person.found
 
 子句段的命名空间和作用域与整体查询语句部分相同
 
-```CQL
+```cypher
 CALL {
   MATCH (p:Person)
   RETURN p
@@ -950,7 +1062,7 @@ ORDER BY p.name
 
 CALL也用于使用处理过程(procedure)
 
-```CQL
+```cypher
 CALL db.labels()
 ```
 
@@ -960,17 +1072,17 @@ CALL db.labels()
 
 在处理过程调用结尾，指定处理过程返回的多个属性值中的某几个
 
-```CQL
+```cypher
 CALL dbms.procedures() YIELD name, signature
 WHERE name='dbms.listConfig'
 RETURN signature
 ```
 
-- $\color{red}{*dbms.procedures()处理过程在当前版本(4.3)已不建议使用，将来会被删除，建议使用的是SHOW \enspace PROCEDURES指令}$
+- $\color{red}{^*dbms.procedures()处理过程在当前版本(4.3)已不建议使用，将来会被删除，建议使用的是SHOW \enspace PROCEDURES指令}$
 
 - 使用
 
-  ```CQL
+  ```cypher
   CALL db.labels() YIELD *
   ```
 
@@ -982,7 +1094,7 @@ RETURN signature
 
 指定查询语句段要使用的数据库
 
-```CQL
+```cypher
 USE myDatabase
 MATCH (n) RETURN n
 ```
@@ -1009,21 +1121,21 @@ MATCH (n) RETURN n
 - 如果DBMS设置中设置dbms.import.csv.legacy_quote_escaping=true，则\作为转义字符；
 - 目标使用的CSV文件需要放在对应的数据库的import文件夹下使用；
 
-```CQL
+```cypher
 LOAD CSV FROM 'file:///artists.csv' AS line
 CREATE (:Artist {name: line[1], year: toInteger(line[2])})
 ```
 
 表格中带有表头的情况下，可通过表头指定对应的列
 
-```CQL
+```cypher
 LOAD CSV WITH HEADERS FROM 'file:///artists-with-headers.csv' AS line
 CREATE (:Artist {name: line.Name, year: toInteger(line.Year)})
 ```
 
 指定字段分隔符
 
-```CQL
+```cypher
 LOAD CSV FROM 'file:///artists-fieldterminator.csv' AS line FIELDTERMINATOR ';'
 CREATE (:Artist {name: line[1], year: toInteger(line[2])})
 ```
@@ -1033,7 +1145,7 @@ CREATE (:Artist {name: line[1], year: toInteger(line[2])})
 - 表格数据过多时，指定使用的行数
 - 不指定个数时，默认每1000行commit一次；
 
-```CQL
+```cypher
 USING PERIODIC COMMIT 500 LOAD CSV FROM 'file:///artists.csv' AS line
 CREATE (:Artist {name: line[1], year: toInteger(line[2])})
 ```
@@ -1065,7 +1177,7 @@ Predicate functions
 
 ##### all()
 
-```CQL
+```cypher
 all(variable IN list WHERE predicate)
 ```
 
@@ -1081,7 +1193,7 @@ all(variable IN list WHERE predicate)
 
 ##### any()
 
-```CQL
+```cypher
 any(variable IN list WHERE predicate)
 ```
 
@@ -1100,7 +1212,7 @@ any(variable IN list WHERE predicate)
 
 ##### exists()
 
-```CQL
+```cypher
 exists(pattern-or-property)
 ```
 
@@ -1114,7 +1226,7 @@ exists(pattern-or-property)
 
 ##### isEmpty()
 
-```CQL
+```cypher
 isEmpty(list)
 isEmpty(map)
 isEmpty(string)
@@ -1128,7 +1240,7 @@ isEmpty(string)
 
 ##### none()
 
-```CQL
+```cypher
 none(variable IN list WHERE predicate)
 ```
 
@@ -1142,7 +1254,7 @@ list本身是null或其中的所有元素都是null，则返回null；
 
 ##### single()
 
-```CQL
+```cypher
 single(variable IN list WHERE predicate)
 ```
 
@@ -1162,7 +1274,7 @@ Scalar functions
 
 ##### coalesce()
 
-```CQL
+```cypher
 coalesce(expression [, expression]*)
 ```
 
@@ -1173,7 +1285,7 @@ coalesce(expression [, expression]*)
 
 ##### endNode()
 
-```CQL
+```cypher
 endNode(relationship)
 ```
 
@@ -1184,7 +1296,7 @@ endNode(relationship)
 
 ##### head()
 
-```CQL
+```cypher
 head(expression)
 ```
 
@@ -1196,7 +1308,7 @@ head(expression)
 
 ##### id()
 
-```CQL
+```cypher
 id(expression)
 ```
 
@@ -1210,7 +1322,7 @@ id(expression)
 
 ##### last()
 
-```CQL
+```cypher
 last(expression)
 ```
 
@@ -1224,7 +1336,7 @@ last(expression)
 
 #####  length()
 
-```CQL
+```cypher
 length(path)
 ```
 
@@ -1232,7 +1344,7 @@ length(path)
 
 返回一条链路的长度，即链路上关系的个数，如：
 
-```CQL
+```cypher
 MATCH p = (a)-->(b)-->(c)
 RETURN length(p) AS length
 ```
@@ -1243,7 +1355,7 @@ RETURN length(p) AS length
 
 ##### properties()
 
-```CQL
+```cypher
 properties(expression)
 ```
 
@@ -1257,7 +1369,7 @@ properties(expression)
 
 ##### randomUUID()
 
-```CQL
+```cypher
 randomUUID()
 ```
 
@@ -1275,7 +1387,7 @@ Universally Unique Identifier，亦称Globally Unique Identifier
 
 ###### list
 
-```CQL
+```cypher
 size(list)
 ```
 
@@ -1287,13 +1399,13 @@ size(list)
 
 ###### pattern expression
 
-```CQL
+```cypher
 size(pattern expression)
 ```
 
 当pattern expression返回一个list时，size返回该list的元素个数，如：
 
-```CQL
+```cypher
 MATCH(n)
 WHERE n.name = 'JOJO'
 RETURN size((n)-[defeat]->())
@@ -1305,7 +1417,7 @@ RETURN size((n)-[defeat]->())
 
 ###### String
 
-```CQL
+```cypher
 size(string)
 ```
 
@@ -1315,7 +1427,7 @@ size(string)
 
 ##### startNode()
 
-```CQL
+```cypher
 startNode(relationship)
 ```
 
@@ -1329,7 +1441,7 @@ startNode(null) 会返回null
 
 ##### timestamp()
 
-```CQL
+```cypher
 timestamp()
 ```
 
@@ -1341,7 +1453,7 @@ timestamp()
 
 ##### toBoolean()
 
-```CQL
+```cypher
 toBoolean(expression)
 ```
 
@@ -1361,7 +1473,7 @@ toBoolean(expression)
 
 ##### toBooleanOrNull()
 
-```CQL
+```cypher
 toBooleanOrNull(expression)
 ```
 
@@ -1373,7 +1485,7 @@ toBooleanOrNull(expression)
 
 ##### toFloat()
 
-```CQL
+```cypher
 toFloat(expression)
 ```
 
@@ -1390,7 +1502,7 @@ toFloat(expression)
 
 ##### toFloatOrNull()
 
-```CQL
+```cypher
 toFloatOrNull(expression)
 ```
 
@@ -1402,7 +1514,7 @@ toFloatOrNull(expression)
 
 ##### toInteger()
 
-```CQL
+```cypher
 toInteger(expression)
 ```
 
@@ -1422,7 +1534,7 @@ toInteger(expression)
 
 ##### toIntegerOrNull()
 
-```CQL
+```cypher
 toIntegerOrNull(expression)
 ```
 
@@ -1434,7 +1546,7 @@ toIntegerOrNull(expression)
 
 ##### type()
 
-```CQL
+```cypher
 type(relationship)
 ```
 
@@ -1456,7 +1568,7 @@ Aggregating functions
 
 ##### avg()
 
-```CQL
+```cypher
 avg(expression)
 ```
 
@@ -1470,7 +1582,7 @@ avg(expression)
 
 ##### collect()
 
-```CQL
+```cypher
 collect(expression)
 ```
 
@@ -1494,7 +1606,7 @@ collect(expression)
 
   - 语法为
 
-    ```CQL
+    ```cypher
     count(expression)
     ```
 
@@ -1504,7 +1616,7 @@ collect(expression)
 
   - 在参数前加DISTINCET关键字
 
-    ```CQL
+    ```cypher
     count(DISTINCT expression)
     ```
 
@@ -1514,7 +1626,7 @@ collect(expression)
 
   - 语法为
 
-    ```CQL
+    ```cypher
     count(*) 
     ```
 
@@ -1522,7 +1634,7 @@ collect(expression)
 
   - 例
 
-    ```CQL
+    ```cypher
     MATCH (n {name: 'A'})-[r]->()
     RETURN type(r), count(*)
     ```
@@ -1540,7 +1652,7 @@ collect(expression)
 
 ##### max()
 
-```CQL
+```cypher
 max(expression)
 ```
 
@@ -1563,7 +1675,7 @@ max(expression)
 
 ##### min()
 
-```CQL
+```cypher
 min(expression)
 ```
 
@@ -1586,7 +1698,7 @@ min(expression)
 
 ##### percentileCont()
 
-```CQL
+```cypher
 percentileCont(expression, percentile)
 ```
 
@@ -1612,7 +1724,7 @@ percentileCont(expression, percentile)
 
 - 对于expression的数据集中没有对应比例数字的情况，使用插值法在最近的两个数字间找出结果，如对上面的数据集进行如下查询
 
-  ```CQL
+  ```cypher
   UNWIND[13,33,44] as n
   RETURN percentileCont(n, 0.4)
   ```
@@ -1623,7 +1735,7 @@ percentileCont(expression, percentile)
 
 ##### percentileDisc()
 
-```CQL
+```cypher
 percentileDisc(expression, percentile)
 ```
 
@@ -1637,7 +1749,7 @@ percentileDisc(expression, percentile)
 
 - 对于expression的数据集中没有对应比例数字的情况，使用取整法在最近的数字中找出结果，如对上一个数据集进行如下查询
 
-  ```CQL
+  ```cypher
   UNWIND[13,33,44] as n
   RETURN percentileDisc(n,0.5)
   ```
@@ -1648,7 +1760,7 @@ percentileDisc(expression, percentile)
 
 ##### stDev()
 
-```CQL
+```cypher
 stDev(expression)
 ```
 
@@ -1666,7 +1778,7 @@ stDev(expression)
 
 ##### stDevP()
 
-```CQL
+```cypher
 stDevP(expression)
 ```
 
@@ -1684,7 +1796,7 @@ stDevP(expression)
 
 ##### sum()
 
-```CQL
+```cypher
 sum(expression)
 ```
 
@@ -1705,7 +1817,7 @@ List functions
 
 ##### keys()
 
-```CQL
+```cypher
 keys(expression)
 ```
 
@@ -1720,7 +1832,7 @@ keys(expression)
 
 ##### labels()
 
-```CQL
+```cypher
 labels(node)
 ```
 
@@ -1734,7 +1846,7 @@ labels(null)会返回null
 
 ##### nodes()
 
-```CQL
+```cypher
 nodes(path)
 ```
 
@@ -1748,7 +1860,7 @@ nodes(null)会返回null
 
 ##### range()
 
-```CQL
+```cypher
 range(start, end [, step])
 ```
 
@@ -1760,19 +1872,19 @@ range(start, end [, step])
 
   - 可以不设置步进长度，默认为1
 
-    ```CQL
+    ```cypher
     RETURN range(1,10)
     ```
 
   - 可以设置步进长度
 
-    ```CQL
+    ```cypher
     RETURN range(1,10,5)
     ```
 
   - 最后一个元素+步进长度超过end大小限制时，会停止加入元素直接返回，如
 
-    ```CQL
+    ```cypher
     RETURN range(1,10,5)
     ```
 
@@ -1780,7 +1892,7 @@ range(start, end [, step])
 
   - 步进可以是负数，此时判断自start起每个数是否小于end
 
-    ```CQL
+    ```cypher
     RETURN range(1,10,1)
     ```
 
@@ -1792,7 +1904,7 @@ range(start, end [, step])
 
 ##### reduce()
 
-```CQL
+```cypher
 reduce(accumulator = initial, variable IN list | expression)
 ```
 
@@ -1800,7 +1912,7 @@ reduce(accumulator = initial, variable IN list | expression)
 
 设定一个变量作为累加器accumulator，初始化该累加器的值，遍历list中的每一个元素，执行expression的操作后，expression的结果计入累加器
 
-```CQL
+```cypher
 with ['a','b','c'] as char
 return reduce(table = '',s in char |table + s)
 ```
@@ -1811,7 +1923,7 @@ return reduce(table = '',s in char |table + s)
 
 ##### relationships()
 
-```CQL
+```cypher
 relationships(path)
 ```
 
@@ -1823,7 +1935,7 @@ relationships(path)
 
 ##### reverse()
 
-```CQL
+```cypher
 reverse(original)
 ```
 
@@ -1835,7 +1947,7 @@ reverse(original)
 
 ##### tail()
 
-```CQL
+```cypher
 tail(list)
 ```
 
@@ -1847,7 +1959,7 @@ tail(list)
 
 ##### toBooleanList()
 
-```CQL
+```cypher
 toBooleanList(list)
 ```
 
@@ -1866,7 +1978,7 @@ toBooleanList(list)
 
 ##### toFloatList()
 
-```CQL
+```cypher
 toFloatList(list)
 ```
 
@@ -1884,7 +1996,7 @@ toFloatList(list)
 
 ##### toIntegerList()
 
-```CQL
+```cypher
 toIntegerList(list)
 ```
 
@@ -1902,7 +2014,7 @@ toIntegerList(list)
 
 ##### toStringList()
 
-```CQL
+```cypher
 toIntegerList(list)
 ```
 
@@ -1932,7 +2044,7 @@ Mathematical functions
 
 ###### abs（）
 
-```CQL
+```cypher
 abs(expression)
 ```
 
@@ -1944,7 +2056,7 @@ abs(null) 会返回null；
 
 ###### ceil()
 
-```CQL
+```cypher
 ceil(expression)
 ```
 
@@ -1958,7 +2070,7 @@ ceil(null)会返回null
 
 ###### floor()
 
-```CQL
+```cypher
 floor(expression)
 ```
 
@@ -1972,7 +2084,7 @@ floor(null)会返回null
 
 ###### rand()
 
-```CQL
+```cypher
 rand()
 ```
 
@@ -1984,7 +2096,7 @@ rand()
 
 ###### round()
 
-```CQL
+```cypher
 round(expression[,precision[,mode]])
 ```
 
@@ -2000,7 +2112,7 @@ round(expression[,precision[,mode]])
 
 - 可以指定精确度，precision会指定返回结果精确到小数点后第几位
 
-  ```CQL
+  ```cypher
   round(3.141592, 3)
   ```
 
@@ -2018,13 +2130,13 @@ round(expression[,precision[,mode]])
   | HALF_UP   | 中间值在precision不为0时，向绝对值更大值取整，precision为0时，向0取整；其余值取最近 |
   | UP        | 向绝对值更大值取整                                           |
 
-  $\color{red}{*此处DOWN/FLOOR/UP的具体情由测试得到，与官方文档略有不同，应该是官方文档的纰漏}$
+  $\color{red}{^*此处DOWN/FLOOR/UP的具体情由测试得到，与官方文档略有不同，应该是官方文档的纰漏}$
 
 
 
 ###### sign()
 
-```CQL
+```cypher
  sign(expression)
 ```
 
@@ -2047,7 +2159,7 @@ round(expression[,precision[,mode]])
 
 ###### e()
 
-```CQL
+```cypher
 e()
 ```
 
@@ -2055,7 +2167,7 @@ e()
 
 返回自然对数$e$
 
-```CQL
+```cypher
 RETURN e()
 ```
 
@@ -2069,7 +2181,7 @@ RETURN e()
 
 ###### exp()
 
-```CQL
+```cypher
 exp(expression)
 ```
 
@@ -2079,13 +2191,13 @@ exp(expression)
 
 exp(null) 会返回null；
 
-$\color{red}{*此处此处官方文档将语法纰漏写错为e(expression)}$
+$\color{red}{^*此处此处官方文档将语法纰漏写错为e(expression)}$
 
 
 
 ###### log()
 
-```CQL
+```cypher
 log(expression)
 ```
 
@@ -2097,13 +2209,13 @@ log(expression)
 - log(0)会返回-Infinity；
 - expression为负数时返回NaN；
 
-$\color{red}{*此处此处官方文档声明log(0)会返回null，实则不然，以下同理}$
+$\color{red}{^*此处此处官方文档声明log(0)会返回null，实则不然，以下同理}$
 
 
 
 ######  log10()
 
-```CQL
+```cypher
  log10(expression)
 ```
 
@@ -2119,7 +2231,7 @@ $\color{red}{*此处此处官方文档声明log(0)会返回null，实则不然�
 
 ###### sqrt()
 
-```CQL
+```cypher
 sqrt(expression)
 ```
 
@@ -2156,7 +2268,7 @@ cypher中的三角函数有以下这些
 
 ###### pi()
 
-```CQL
+```cypher
 pi()
 ```
 
@@ -2164,7 +2276,7 @@ pi()
 
 返回$\pi$
 
-```CQL
+```cypher
 RETURN pi()
 ```
 
@@ -2178,7 +2290,7 @@ RETURN pi()
 
 ###### degrees()
 
-```CQL
+```cypher
  degrees(expression)
 ```
 
@@ -2192,7 +2304,7 @@ degrees(null)会返回null
 
 ###### radians()
 
-```CQL
+```cypher
 radians()
 ```
 
@@ -2214,7 +2326,7 @@ String functions
 
 ##### left()
 
-```CQL
+```cypher
 left(original, length)
 ```
 
@@ -2231,7 +2343,7 @@ left(original, length)
 
 ##### ltrim()
 
-```CQL
+```cypher
 ltrim(original)
 ```
 
@@ -2245,7 +2357,7 @@ ltrim(null) 会返回null
 
 ##### replace()
 
-```CQL
+```cypher
 replace(original, search, replace)
 ```
 
@@ -2260,7 +2372,7 @@ replace(original, search, replace)
 
 ##### reverse()
 
-```CQL
+```cypher
 reverse(original)
 ```
 
@@ -2274,7 +2386,7 @@ reverse(null)会返回null
 
 ##### right()
 
-```CQL
+```cypher
 right(original,length)
 ```
 
@@ -2291,7 +2403,7 @@ right(original,length)
 
 ##### rtrim()
 
-```CQL
+```cypher
 rtrim(original)
 ```
 
@@ -2305,7 +2417,7 @@ rtrim(null) 会返回null
 
 ##### split()
 
-```CQL
+```cypher
 split(original, splitDelimiter)
 ```
 
@@ -2320,7 +2432,7 @@ split(original, splitDelimiter)
 
 ##### substring()
 
-```CQL
+```cypher
 substring(original, start [, length])
 ```
 
@@ -2338,7 +2450,7 @@ substring(original, start [, length])
 
 ##### toLower()
 
-```CQL
+```cypher
 toLower(original)
 ```
 
@@ -2352,7 +2464,7 @@ toLower(null) 会返回null
 
 ##### toString()
 
-```CQL
+```cypher
 toString(expression)
 ```
 
@@ -2368,7 +2480,7 @@ toString(expression)
 
 #####  toStringOrNull()
 
-```CQL
+```cypher
 toStringOrNull(expression)
 ```
 
@@ -2382,7 +2494,7 @@ toString()无法转换的情况会返回null
 
 ##### toUpper()
 
-```CQL
+```cypher
 toUpper(original)
 ```
 
@@ -2396,7 +2508,7 @@ toUpper(null) 会返回null；
 
 ##### trim()
 
-```CQL
+```cypher
 trim(original)
 ```
 
@@ -2418,7 +2530,7 @@ trim(null)会返回null
 
 ##### linenumber()
 
-```CQL
+```cypher
 linenumber()
 ```
 
@@ -2430,7 +2542,7 @@ linenumber()
 
 ##### file()
 
-```CQL
+```cypher
 file()
 ```
 
@@ -2460,14 +2572,32 @@ file()
 
 API
 
-neo4j提供以下语言/方法的编程API
+neo4j提供以两种编程方式
 
-- Go；
-- Java；
-- JavaScript；
-- .Net;
-- Python
-- HTTP
+- Driver
+
+  - 提供一种通过Driver类的实例对象访问一个neo4j数据库的方法，进而实现如访问MySql数据库那样将查询语句发送至数据库后返回查询结果的编程；
+  - 自neo4j 4.0起，Driver与协议的版本号同neo4j数据库一致；
+  - neo4j 4.0版本仍然保证对低版本Driver的最低支持；
+  - Driver 4.0保证对neo4j 4.0和3.5的最低支持；
+  - 当数据库与Driver有一方版本低于4.0时，会触发fallback模式，使得功能被限制在版本号较低的那一方的范围内；
+  - 提供以下语言/方法的编程接口
+
+  | 语言/框架  | 支持版本                                                     |
+  | ---------- | ------------------------------------------------------------ |
+  | .NET       | .NET Standard 2.0                                            |
+  | Go         | Go 1.10                                                      |
+  | Java       | Java 8+                                                      |
+  | JavaScript | 所有Node.JS的长期支持版本（LTS）<br />specifically the 4.x and 6.x series runtimes |
+  | Python     | Python 3.5 及以上                                            |
+  | HTTP       | 官方Driver不支持HTTP通信<br />如果需要相关功能，请使用社区版Driver（community drivers） |
+
+- 内嵌编程
+
+  - 提供neo4j本身的编程包，建立一种嵌在程序内的图数据库；、
+  - 在程序直接调用neo4j各功能的对象，在程序层面直接实现neo4j图数据库的功能；
+
+
 
 
 
@@ -2485,13 +2615,13 @@ Java Driver Manual
 
 - Java Driver
   - 提供一种通过Driver类的实例对象访问一个neo4j数据库的方法，进而实现如Java程序访问MySql数据库那样将查询语句发送至数据库后返回查询结果的编程；
-  - 参考neo4j-driver-manual-4.3-java.pdf；
+  - 参考手册**neo4j-driver-manual-4.3-java.pdf**；
 - Java API
   - 提供Java中neo4j本身的jar包，建立一种嵌在Java程序内的图数据库；
-  - 在Java中直接调用neo4j各功能的对象，在Java程序层面直接实现neo4j图数据库的功能
-  - 参考neo4j-java-reference-4.3.pdf
+  - 在Java中直接调用neo4j各功能的对象，在Java程序层面直接实现neo4j图数据库的功能；
+  - 参考手册**neo4j-java-reference-4.3.pdf**；
   
-- **本文档侧重Java Driver**
+- **本文档侧重Java Driver**；
 
 
 
@@ -2505,6 +2635,7 @@ Java Driver Manual
 		<groupId>org.neo4j.driver</groupId>
 		<artifactId>neo4j-java-driver</artifactId>
 		<version>$JAVA_DRIVER_VERSION</version>
+        <!-- 或填版本号 -->
 	</dependency>
 </dependencies>
 ```
@@ -2559,7 +2690,7 @@ public class HelloWorldExample implements AutoCloseable
 				public String execute( Transaction tx )
 				{
                     //该查询语句中的message来自于该printGreeting方法的参数，
-                    //由$message在CQL中声明，由parameter()方法设定进CQL中
+                    //由$message在cypher中声明，由parameter()方法设定进cypher中
 					Result result = tx.run( "CREATE (a:Greeting) " +
 											"SET a.message = $message " +
 											"RETURN a.message + ', from node ' + id(a)",
@@ -2587,6 +2718,373 @@ public class HelloWorldExample implements AutoCloseable
 	}
 }
 ```
+
+$\color{red}{^*第一次在可视界面中进入数据库时会提示改密码，初始账户名和密码都是neo4j}$
+
+$\color{red}{如果Driver连接数据库时密码填写错误，会在java的IDE的log内提示The \enspace client \enspace is \enspace unauthorized \enspace due \enspace to \enspace authentication \enspace failure，}$
+
+$\color{red}{该错误也可能因为数据库设置中的认证选项导致，但4.3.5版本内并未出现此情况}$
+
+$\color{red}{注意区别DBMS的密码和数据库的密码}$
+
+
+
+##### Driver 对象
+
+一个使用neo4j数据库的程序需要一个Driver对象处理所有相关的数据库访问操作，程序中所有需要进行数据库访问的部分都应该可以调用该Driver对象
+
+###### 多线程安全
+
+对于需要考虑多线程安全的情况，Driver对象可以被认为时线程安全的（thread-safe）
+
+
+
+###### 生命周期
+
+- 一个程序一般会在启动时构建一个Driver对象，并在退出时将其销毁；
+- 销毁一个Driver对象会通过关闭连接池的方式立即停止所有Driver对象下的连接；
+- 销毁一个Driver对象会回滚所有已经打开的处理（transaction），并关闭所有未提交的结果；
+- 建立一个Driver需要连接目标的URI与认证信息；
+
+
+
+###### 实例：一个Driver对象
+
+```java
+import org.neo4j.driver.AuthTokens;
+import org.neo4j.driver.Driver;
+import org.neo4j.driver.GraphDatabase;
+
+//继承自动关闭接口的主类
+public class DriverLifecycleExample implements AutoCloseable
+{
+    //私有一个Driver实例
+	private final Driver driver;
+    
+    //带参构造方法，传入URI和账号密码
+	public DriverLifecycleExample( String uri, String user, String password )
+	{
+        driver = GraphDatabase.driver( uri, AuthTokens.basic( user, password ) );
+    }
+    
+    //重写关闭方法
+    @Override
+    public void close() throws Exception
+    {
+        driver.close();
+    }
+}
+```
+
+
+
+##### URI
+
+URI指定了连接目标和连接方法
+
+- 自neo4j 4.0起，默认使用未加密的本地通信；
+
+- 当安装了认证证书且Driver可以加密后，可进行完整认证；
+
+- neo4j协议
+
+  - 以 neo4j:// 开头的URI用于初始化或获取通信答复；
+
+  - 通常的URI格式
+
+    ```URI
+    neo4j://<HOST>:<PORT>[?<ROUTING_CONTEXT>]
+    ```
+
+- bolt协议
+
+  - 蚂蚁金服SOFAStack微服务开源项目下提供的一种通信协议；
+
+  - 可用于在neo4j Driver中建立与数据库的单个点对点通信；
+
+  - 相对于需要更多可行功能的数据库服务，bolt适合给特定功能服务的子程序；
+
+  - 通常的URI格式
+
+    ```URI
+    bolt://<HOST>:<PORT>
+    ```
+
+  - neo4j 3.0版本不支持在单个实例模式下使用路由表，需要使用bolt协议为老的非聚簇服务建立通信；
+
+- HTTP
+
+  - 示例：http://localhost:7474/；
+  - 不支持在程序中直接使用该http地址，会返回Invalid address format http错误；
+  - 但实际上在浏览器中直接访问该地址会进入neo4j浏览器界面；
+
+
+
+##### Kerberos
+
+neo4j数据库通过Kerberos提供一种简单的认证方案
+
+###### 实例
+
+```java
+import org.neo4j.driver.AuthTokens;
+import org.neo4j.driver.Driver;
+import org.neo4j.driver.GraphDatabase;
+
+public KerberosAuthExample( String uri, String ticket )
+{
+	driver = GraphDatabase.driver( uri, AuthTokens.kerberos( ticket ) );
+}
+```
+
+
+
+##### 工作流
+
+<div>			
+    <center>
+    <img src=".\mdimage\image-20211115162803917.png"
+         alt="无法显示"
+         style="zoom:50%"/>
+    <br>		
+   	工作流示意
+    </center>
+</div>
+
+###### Session
+
+- Session是轻量的连续transaction的容器
+- 一个transaction开始时，其所在的Session会在连接池中获取一个连接；
+- 一个transaction提交或回滚时，其所在的Session会释放相应的连接；
+- 一个Session只会在执行时占用连接资源，空闲时间资源占用很少；
+- 为了保证连续性，一个Session同时只执行一个transaction的操作；
+- 对于需要考虑线程安全的语言，Session应不被视为线程安全的；
+- 关闭一个Session时，打开的transaction会被回滚，相关的连接会被释放回连接池；
+- neo4j不支持跨数据库或Session的transaction；
+
+
+
+###### transaction
+
+- transaction是执行一个Cypher查询的原子单位；
+- neo4j Driver提供一种基于Session对象的transaction函数机制，使得一个函数可以在不同服务中重复使用直到其成功或超时，该方法适合绝大多数客户端程序；
+- neo4j Driver提供一种方便的自动提交的transaction机制，使得可以在受限的方式下进行单独查询，可以使代码开销更少，适合不需要较高适用性的情况；
+- neo4j Driver提供一种低级别的不受管理的transaction API，适合对错误处理和重试需要自定义的情况；
+
+
+
+##### 数据类型
+
+| Neo4j Cypher Type | Java Type     |
+| ----------------- | ------------- |
+| null              | null          |
+| List              | List          |
+| Map               | Map           |
+| Boolean           | boolean       |
+| Integer           | long          |
+| Float             | double        |
+| String            | String        |
+| ByteArray         | byte[]        |
+| Date              | LocalDate     |
+| Time              | OffsetTime    |
+| LocalTime         | LocalTime     |
+| DateTime          | ZonedDateTime |
+| LocalDateTime     | LocalDateTime |
+| Duration          | IsoDuration*  |
+| Point             | Point         |
+| Node              | Node          |
+| Relationship      | Relationship  |
+| Path              | Path          |
+
+
+
+##### API
+
+###### Class GraphDatabase
+
+- 用于创建并返回Driver对象
+
+- 包含9个类方法
+
+  | 返回值        | 方法                                                         | 说明                                                  |
+  | ------------- | ------------------------------------------------------------ | ----------------------------------------------------- |
+  | static Driver | driver(String uri)                                           | 根据URI返回一个Driver对象                             |
+  | static Driver | driver(URI uri)                                              | 根据URI返回一个Driver对象                             |
+  | static Driver | driver(URI uri, Config config)                               | 根据URI与设置返回一个Driver对象                       |
+  | static Driver | driver(String uri, Config config)                            | 根据URI与设置返回一个Driver对象                       |
+  | static Driver | driver(String uri, AuthToken authToken)                      | 根据URI与认证信息返回一个Driver对象                   |
+  | static Driver | driver(URI uri, AuthToken authToken)                         | 根据URI与认证信息返回一个Driver对象                   |
+  | static Driver | driver(String uri, AuthToken authToken, Config config)       | 根据URI、认证信息与设置返回一个Driver对象             |
+  | static Driver | driver(URI uri, AuthToken authToken, Config config)          | 根据URI、认证信息与设置返回一个Driver对象             |
+  | static Driver | routingDriver(Iterable<URI> routingUris, AuthToken authToken, Config config) | 根据认证信息、设置与第一个有效的URI返回一个Driver对象 |
+
+
+
+###### Interface Driver
+
+- 继承AutoCloseable接口；
+
+- 总是线程安全的；
+
+- 对于一个数据库，管理一个连接池，最有效的使用方法是对每个应用都使用同一个Driver实例；
+
+- 建立连接时，支持以下两种URI格式
+
+  - bolt：用于直接连接；
+  - neo4j：能够自动发现集群中的成员并按照AccessMode进行session路由；
+
+- 包含以下16个方法
+
+  | 返回值                   | 方法                                      | 说明                                                         |
+  | ------------------------ | ----------------------------------------- | ------------------------------------------------------------ |
+  | boolean                  | isEncrypted()                             | 是否加密                                                     |
+  | Session                  | session()                                 | 使用默认设置创建一个session                                  |
+  | Session                  | session(SessionConfig sessionConfig)      | 根据 sessionConfig创建一个session                            |
+  | RxSession                | rxSession()                               | 创建一个RxSession                                            |
+  | RxSession                | rxSession(SessionConfig sessionConfig)    | 根据 sessionConfig创建一个RxSession                          |
+  | AsyncSession             | asyncSession()                            | 创建一个AsyncSession                                         |
+  | AsyncSession             | asyncSession(SessionConfig sessionConfig) | 根据 sessionConfig创建一个AsyncSession                       |
+  | void                     | close()                                   | 关闭该Driver实例的所有资源                                   |
+  | CompletionStage<Void>    | closeAsync()                              | 关闭该Driver实例的所有资源                                   |
+  | Metrics                  | metrics()                                 | 返回该Driver的指标<br />如果指标报告设置未开启，则会抛出一个客户端异常 |
+  | boolean                  | isMetricsEnabled()                        | 是否开启指标报告                                             |
+  | TypeSystem               | defaultTypeSystem()                       | 返回该Dirver支持的所有数据类型系统                           |
+  | void                     | verifyConnectivity()                      | 检查连接<br />如果连接失败则会抛出一个异常，通过异常来确认具体信息<br />即使该方法抛出异常，也需要调用close()来释放占用的资源 |
+  | CompletionStage<Boolean> | verifyConnectivityAsync                   | 检查连接                                                     |
+  | boolean                  | supportsMultiDb                           | 返回该Driver连接的数据库或集群是否支持多重数据库             |
+  | CompletionStage<Boolean> | supportsMultiDbAsync                      | 返回该Driver连接的数据库或集群是否支持多重数据库             |
+
+
+
+###### Interface Session
+
+- 通常地，一个Session在执行一次transaction时会从连接池中申请得到一个连接，并在transaction完全提交并获取完整结果后释放连接回到连接池；
+
+- 一个连接在其存在周期内可以被多个Session获得，但同时只能有一个Session控制它；
+
+- 客户端程序不应直接考虑连接管理；
+
+- Session并不总是线程安全的，当客户端程序需要多线程编程时应使用多个Session；
+
+- 受管理的transaction会自动提交，而不应显式地提交；
+
+- 包含以下12个方法
+
+  | 返回值      | 方法                                                         | 说明                                                         |
+  | ----------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+  | Transaction | beginTransaction()                                           | 返回一个不受管的transaction                                  |
+  | Transaction | beginTransaction(TransactionConfig config)                   | 根据设置返回一个不受管的transaction                          |
+  | <T> T       | readTransaction(TransactionWork<T> work)                     | 执行一个读取transaction并返回它的结果                        |
+  | <T> T       | readTransaction(TransactionWork<T> work, TransactionConfig config) | 根据设置执行一个读取transaction并返回它的结果                |
+  | <T> T       | writeTransaction(TransactionWork<T> work)                    | 执行一个写入transaction并返回它的结果                        |
+  | <T> T       | writeTransaction(TransactionWork<T> work, TransactionConfig config) | 根据设置执行一个写入transaction并返回它的结果                |
+  | Result      | run(String query, TransactionConfig config)                  | 用一个受管理的transaction自动提交以执行一个查询，并返回执行结果 |
+  | Result      | run(String query, Map<String,Object> parameters, TransactionConfig config) | 根据设置用一个受管理的transaction自动提交以执行一个带Map参数的查询，并返回执行结果 |
+  | Result      | run(Query query, TransactionConfig config)                   | 根据设置用一个受管理的transaction自动提交以执行一个查询，并返回执行结果 |
+  | Bookmark    | lastBookmark()                                               | 返回最后执行的transaction后的Bookmark<br />如果没有收到Bookmark或最后一个transaction回滚了，则返回null |
+  | void        | reset()                                                      | @Deprecated，别用<br />仅在一个Session被传入另一个线程中被调用时有用，但在高版本neo4j中有其他代替该方法的方式 |
+  | void        | close()                                                      | 关闭该Session<br />关闭和访问一个Session的开销非常小         |
+
+  
+
+###### Interface Transaction
+
+- 执行一次处理的最小逻辑单元；
+
+- 一个Transaction实例对应一次数据库处理；
+
+- Transaction通常应在一个try语句块中，以应对可能的异常；
+
+- 出现异常时，Transaction会自动回滚并关闭；
+
+- 包含以下8个方法
+
+  | 返回值 | 方法                                             | 说明                                                         |
+  | ------ | ------------------------------------------------ | ------------------------------------------------------------ |
+  | void   | commit()                                         | 提交该transaction<br />调用该方法后该Transaction将不能再次调用commit()或rollback() |
+  | void   | rollback()                                       | 回滚该transaction<br />调用该方法后该Transaction将不能再次调用commit()或rollback() |
+  | void   | close()                                          | 关闭该Transaction实例<br />如果该Transaction实例没有调用过commit()或rollback()<br />则在调用close()时会默认调用一次rollback() |
+  | Result | run(String query, Value parameters)              | 执行一次查询，并按照parameters设置查询语句中的变量           |
+  | Result | run(String query, Map<String,Object> parameters) | 执行一次查询，并按照parameters键值表设置查询语句中的变量     |
+  | Result | run(String query, Record parameters)             | 执行一次查询，并按照parameters Record表设置查询语句中的变量  |
+  | Result | run(String query)                                | 执行一次查询                                                 |
+  | Result | run(Query query)                                 | 执行一次查询                                                 |
+
+  
+
+###### Interface TransactionWork<T>
+
+- 实例用于在Session.readTransaction(TransactionWork)和Session.writeTransaction(TransactionWork)方法中回调的接口；
+
+- 匿名对象回调时，需要重写execute(Transaction tx)方法；
+
+- 回调时，readTransaction或writeTransaction方法会传入execute(Transaction tx)中的Transaction参数；
+
+- 包含以下1个方法
+
+  | 返回值 | 方法                    | 说明                                             |
+  | ------ | ----------------------- | ------------------------------------------------ |
+  | T      | execute(Transaction tx) | 使用tx执行设定的查询内容<br />返回指定类型的结果 |
+
+
+
+###### Interface Result
+
+- 返回查询的结果，通常以Records流的形式；
+
+- 以流的形式返回是因为存在查询结果出现无穷个结果行的情况；
+
+- 直到同一个transaction的下一次查询或transaction被销毁前，返回的Result实例都是有效的；
+
+- 为了保证有大量结果的Result能够完整的返回，需要确保对应的Transaction或Session调用AutoCloseable.close()；
+
+- 包含以下9个方法
+
+  | 返回值         | 方法                                 | 说明                                                         |
+  | -------------- | ------------------------------------ | ------------------------------------------------------------ |
+  | List<String>   | keys()                               | 返回结果中的键                                               |
+  | boolean        | hasNext()                            | 遍历器后方是否还有结果行                                     |
+  | Record         | next()                               | 向后移动遍历器并返回移动至的结果行                           |
+  | Record         | single()                             | 返回Record流中唯一的结果行<br />调用该方法会穷尽该Result中的内容，即使抛出NoSuchRecordException异常也会穷尽<br />如果该Result中没有结果行或不止一个结果行则会抛出一个NoSuchRecordException异常 |
+  | Record         | peek()                               | 返回遍历器的下一个结果行，但不移动遍历器<br />如果该Result中没有下一个结果行则会抛出一个NoSuchRecordException异常 |
+  | Stream<Record> | stream()                             | 将该Result流转为一个Record Stream后返回                      |
+  | List<Record>   | list()                               | 将该Result流转为List后返回<br />用于在结果行有限且需要多次反复读取或存储结果的情况<br />Result流中结果行个数有无限个时，调用该方法会导致内存耗尽<br />调用该方法会导致Result被穷尽 |
+  | <T> List<T>    | list(Function<Record,T> mapFunction) | 将所有结果行按照mapFunction方法转为T类型后组成一个List<T>返回<br />用于在结果行有限且需要多次反复读取或存储结果的情况<br />Result流中结果行个数有无限个时，调用该方法会导致内存耗尽<br />调用该方法会导致Result被穷尽 |
+  | ResultSummary  | consume()                            | 返回ResultSummary<br />调用该方法会导致Result被穷尽<br />如果在consume之后还需要访问Result的内容，则需要在consume之前使用List() |
+
+  
+
+###### Interface Record
+
+- 结果行，组成Result；
+
+- 包含键值对，值可通过序列Index或键Key来访问；
+
+- 包含以下方法
+
+  | 返回值                   | 方法                            | 说明                                        |
+  | ------------------------ | ------------------------------- | ------------------------------------------- |
+  | List<String>             | keys()                          | 返回所有键组成的List                        |
+  | List<Value>              | values()                        | 返回所有值组成的List                        |
+  | boolean                  | containsKey(String key)         | 是否含有该key的键                           |
+  | int                      | index(String key)               | 返回该key的键的序列                         |
+  | Value                    | get(String key)                 | 按key为键取属性值                           |
+  | Value                    | get(int index)                  | 按序列取属性值                              |
+  | int                      | size()                          | 返回字段个数                                |
+  | Map<String,Object>       | asMap()                         | 将该行结果转为Map类型并返回                 |
+  | <T> Map<String,T>        | asMap(Function<Value,T> mapper) | 通过mapper方法将该结果行的内容转为map后返回 |
+  | List<Pair<String,Value>> | fields()                        | 将该结果行按照key的顺序转为List后返回       |
+
+
+
+
+###### Interface Value
+
+- Value实例作为Record中键值对的值，提供将neo4j数据类型转为Java数据类型的方法
+- 具体使用可在编程时通过IDE的自动补全了解；
+- 该接口方法较多，但多为类型转换，容易理解；
+
+
 
 
 
